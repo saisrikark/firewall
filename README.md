@@ -10,3 +10,4 @@ Modules
     - second layer - packet based trigger
     - call dynamic firewall
 4. Dynamic firewall - to dynamically add rules to firewall being used
+5. Redirection module - to send a packet in the format we want to the honeypot
