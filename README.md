@@ -3,15 +3,24 @@ Implementation of a dynamic rules updation for a firewall to counter ddos
 
 Modules
 1. Controller which starts all other modules simultaneously
-2. Sniffer to sniff packets
-    - send this data to the trigger module
+    - controller.py
+2. Sniffer 
+    - to sniff packets
+    - sniffer.py
 3. Trigger module running while sniffing packets
-    - first layer - traffic based trigger
-    - second layer - packet based trigger
-    - call dynamic firewall
-4. Dynamic firewall - to dynamically add rules to firewall being used
-    - and to check for a packet validity.
-5. Redirection - to send the packet to the honeypot or otherwise
+    - first layer - traffic based trigger 
+        - traffictrigger.py
+    - second layer - packet based trigger 
+        - packetfilter.py
+4. Dynamic firewall 
+    - to dynamically add rules to firewall being used 
+    - firewall.py
+5. Packet Filter
+    - to check for a packet validity 
+    - firewall.py
+5. Redirection 
+    - to send the packet to the honeypot or otherwise
+    - forwarder.py
 
 How will it work?
 1. Start a lot of sniffers on each core.
@@ -40,5 +49,5 @@ How will the flow work(for attack)?
     and let the second trigger take charge.
 6. Second trigger will execute all the rules to check
     for a malicious packet.
-    If malicious call the firewall module to update rule.
-7. Accordingly call the forwarding module 
+    If malicious call the firewall module to update rule
+7. Accordingly call the forwarding module from second trigger
