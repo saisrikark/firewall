@@ -9,11 +9,17 @@ import time
 
 max_queue_size = 500
 capture = pyshark.LiveCapture(interface = 'wlan0')
+logging_packets_counter = 0
 j = 0
 
-def write_into_file(ipc_variables, capture_list, start_index, end_index):
+def packet_logger(ipc_variables, capture_list):
+    print("Logging packets to packets.log")
+    global logging_packets_counter
+    start_index = logging_packets_counter
+    end_index = len(capture_list)
     packet_queue = ipc_variables["packet_queue"]
     for i in range(start_index,end_index):
+        print("In here")
         try:
             global j
             packet_log = str(j) + " " + str(capture_list[i].sniff_timestamp) + " "
@@ -32,18 +38,24 @@ def write_into_file(ipc_variables, capture_list, start_index, end_index):
             fp = open("packets.log","a")
             fp.write("Failed To Log The Packet\n")
             fp.close()
+    logging_packets_counter = end_index
     if(packet_queue.qsize() > max_queue_size):
         print("Queue size before removing elements", packet_queue.qsize())
         while(not packet_queue.empty()):
             packet_queue.get()
         print("Queue size after removing elements", packet_queue.qsize())
 
+def packet_logger_controller(ipc_variables, capture_list):
+    while(True):
+        time.sleep(5)
+        packet_logger(ipc_variables, capture_list)
+
 def read_packets(ipc_variables):
+    older_count = new_count = 0
     packet_queue = ipc_variables["packet_queue"]
     unfiltered_packets_queue = ipc_variables["unfiltered_packets_queue"]
     while(len(capture) == 0):
         time.sleep(5)
-    older_count = 0
     while(True):
         new_count = len(capture)
         if(new_count != older_count):
@@ -51,11 +63,14 @@ def read_packets(ipc_variables):
             for index in range(older_count, new_count):
                 packet_queue.put(capture[index])
                 unfiltered_packets_queue.put(capture[index])
-            write_into_file(ipc_variables, capture, older_count, new_count)
             older_count = new_count
-            time.sleep(10)
+            #time.sleep(10)
 
 def sniffer_controller(ipc_variables):
-    t1 = threading.Thread(target=read_packets, args=(ipc_variables,))
-    t1.start()
+    global ipc_variables_glb
+    ipc_variables_glb = ipc_variables
+    read_packets_thread = threading.Thread(target=read_packets, args=(ipc_variables,))
+    packet_logger_thread = threading.Thread(target=packet_logger_controller, args=(ipc_variables, capture))
+    read_packets_thread.start()
+    packet_logger_thread.start()
     capture.sniff()
