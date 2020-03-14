@@ -12,13 +12,13 @@ Modules
         - traffictrigger.py
     - second layer - packet based trigger 
         - packetfilter.py
-4. Dynamic firewall 
+4. Dynamic firewall
     - to dynamically add rules to firewall being used 
     - firewall.py
 5. Packet Filter
-    - to check for a packet validity 
+    - to check for a packet validity
     - firewall.py
-5. Redirection 
+6. Redirection 
     - to send the packet to the honeypot or otherwise
     - forwarder.py
 
