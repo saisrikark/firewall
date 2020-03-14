@@ -19,7 +19,6 @@ def packet_logger(ipc_variables, capture_list):
     end_index = len(capture_list)
     packet_queue = ipc_variables["packet_queue"]
     for i in range(start_index,end_index):
-        print("In here")
         try:
             global j
             packet_log = str(j) + " " + str(capture_list[i].sniff_timestamp) + " "
@@ -34,14 +33,16 @@ def packet_logger(ipc_variables, capture_list):
             fp = open("packets.log", "a")
             fp.write(packet_log)
             fp.close()
-        except:
+        except Exception as e:
             fp = open("packets.log","a")
-            fp.write("Failed To Log The Packet\n")
+            fp.write("Failed To Log The Packet " + str(e) + "\n")
             fp.close()
     logging_packets_counter = end_index
     if(packet_queue.qsize() > max_queue_size):
         print("Queue size before removing elements", packet_queue.qsize())
-        while(not packet_queue.empty()):
+        count = packet_queue.qsize()
+        while(count):
+            count -= 1
             packet_queue.get()
         print("Queue size after removing elements", packet_queue.qsize())
 
@@ -59,12 +60,10 @@ def read_packets(ipc_variables):
     while(True):
         new_count = len(capture)
         if(new_count != older_count):
-            #print(str(older_count) + " " + str(new_count))
             for index in range(older_count, new_count):
                 packet_queue.put(capture[index])
                 unfiltered_packets_queue.put(capture[index])
             older_count = new_count
-            #time.sleep(10)
 
 def sniffer_controller(ipc_variables):
     global ipc_variables_glb

@@ -11,9 +11,8 @@ unfiltered_packets_queue = None
 filtered_packets_queue = None
 
 def trigger_rule(after_packet_count, before_packet_count):
-    # Need to fill this up and call it as the trigger rule
-    # This implementation is temporary
-    return (after_packet_count - before_packet_count) > 15
+    # Rule - packets/sec > threshold
+    return ((after_packet_count - before_packet_count)/delta_time) > 5
 
 def check_delta_surge(ipc_variables):
     # Check if there is an unwanted surge in packets between delta time
@@ -26,16 +25,16 @@ def check_delta_surge(ipc_variables):
         print("Surge in traffic detected, initializing packet check")
         packet_check_flag = ipc_variables["packet_check_flag"]
         packet_check_flag.value = True # Set the flag to check the packets
-        print("Flag value", packet_check_flag.value)
     else:
         # Update the filtered packet list
         packet_check_flag = ipc_variables["packet_check_flag"]
         packet_check_flag.value = False # Set the flag to not check the packets
-        print("Unfiltered queue size", unfiltered_packets_queue.qsize())
-        while(not unfiltered_packets_queue.empty()):
+        count = unfiltered_packets_queue.qsize()
+        while(count):
+            count -= 1
             filtered_packets_queue.put(unfiltered_packets_queue.get())
-        print("Flag value", packet_check_flag.value)
-        print("Filtered queue size", filtered_packets_queue.qsize())
+        print("Unfiltered queue size after filtering", unfiltered_packets_queue.qsize())
+        print("Filtered queue size", filtered_packets_queue.qsize(), "change", count)
 
 def traffictrigger_controller(ipc_variables):
     global unfiltered_packets_queue
