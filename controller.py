@@ -7,6 +7,7 @@ import daemon
 import packetfilter
 import sniffer
 import traffictrigger
+import forwarder
 
 def controller():
     
@@ -24,13 +25,15 @@ def controller():
     ipc_variables["malicious_packets_queue"] = malicious_packets_queue
     ipc_variables["packet_check_flag"] = packet_check_flag  
 
+    packetfilter_process = multiprocessing.Process(target=packetfilter.packetfilter_controller, args=(ipc_variables,))
     sniffer_process = multiprocessing.Process(target=sniffer.sniffer_controller, args=(ipc_variables,))
     traffictrigger_process = multiprocessing.Process(target=traffictrigger.traffictrigger_controller, args=(ipc_variables,))
-    packetfilter_process = multiprocessing.Process(target=packetfilter.packetfilter_controller, args=(ipc_variables,))
-    
+    forwarder_process = multiprocessing.Process(target=forwarder.forwarder_controller, args=(ipc_variables,))
+
     packetfilter_process.start()
     sniffer_process.start()
     traffictrigger_process.start()
+    forwarder_process.start()
 
 if __name__ == "__main__":
     controllerprocess = multiprocessing.Process(target=controller)
