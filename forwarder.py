@@ -9,6 +9,7 @@ resource_ip = "127.0.0.1"
 def create_forward_packet(pyshark_object, destination):
     packet = IP()/UDP()
     packet[IP].dest = destination
+    packet[IP].src = "1.1.1.1"
     return packet
 
 def send_packet(packet):
