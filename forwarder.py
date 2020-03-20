@@ -16,12 +16,13 @@ def send_packet(packet):
     send(packet)
 
 def send_to_honeypot(ipc_variables):
-    filtered_packets_queue = ipc_variables["filtered_packets_queue"]
+    malicious_packets_queue = ipc_variables["malicious_packets_queue"]
     while(True):
-        count = filtered_packets_queue.qsize()
+        count = malicious_packets_queue.qsize()
         while(count):
-            filtered_packet = filtered_packets_queue.get() 
+            filtered_packet = malicious_packets_queue.get() 
             try:
+                print("To honeypot")
                 scapy_object = create_forward_packet(filtered_packet, honeypot_ip) # Form packet code
                 send_packet(scapy_object) # Send to IP code
             except Exception as e:
@@ -29,12 +30,13 @@ def send_to_honeypot(ipc_variables):
             count -= 1
 
 def send_to_backend(ipc_variables):
-    malicious_packets_queue = ipc_variables["malicious_packets_queue"]
+    filtered_packets_queue = ipc_variables["filtered_packets_queue"]
     while(True):
-        count = malicious_packets_queue.qsize()
+        count = filtered_packets_queue.qsize()
         while(count):
-            malicious_packet = malicious_packets_queue.get() 
-            try:    
+            malicious_packet = filtered_packets_queue.get() 
+            try:   
+                print("To resource")
                 scapy_object = create_forward_packet(malicious_packet, resource_ip) # Form packet code
                 send_packet(scapy_object) # Send to IP code
             except Exception as e:
