@@ -16,8 +16,7 @@ class SqlDatabase:
         connection = mysql.connector.connect(
             host=host,
             passwd=password,
-            user=username,
-            database="honeypot"
+            user=username
         )
 
         self.username = username
@@ -67,11 +66,17 @@ class SqlDatabase:
 
         raise Exception("No Database Named {0}".format(db_name))
 
-    def insert_into_packets(self, values_tuple):
+    def insert_packets(self, table_name, values_tuple):
 
-        sql_command = 'INSERT INTO `packets`(`timestamp`, `src_ip`, `dest_ip`, `src_port`, `dest_port`, `src_mac`, `dest_mac`) VALUES ("1","1","1","1","1","1","1")'
-        r = self._execute_sql_command(sql_command)
-        print(r)
+        sql_command = "INSERT INTO " + table_name + " VALUES(%s,%s,%s,%s,%s,%s,%s)"
+        self._execute_sql_command(sql_command, args=values_tuple)
+        self.connection.commit()
+
+    def get_packets(self, table_name):
+
+        sql_command = "SELECT * FROM " + table_name
+        cursor = self._execute_sql_command(sql_command)
+        return list(cursor)
 
 
 
