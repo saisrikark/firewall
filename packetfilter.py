@@ -32,10 +32,8 @@ def filter_packets(ipc_variables):
             packet = temp_packets_queue.get()
             if(result): # Filtered Packet
                 filtered_packets_queue.put(packet)
-                print("Filtered packet")
             else: # Malicious packet
                 malicious_packets_queue.put(packet)
-                print("Malicious packet")
 
 def packetfilter_controller(ipc_variables):
     # Create database objects here share with filter_packets

@@ -6,7 +6,6 @@ from scapy.all import *
 
 honeypot_ip = "127.0.0.1"
 resource_ip = "127.0.0.1"
-
 s = conf.L3socket(iface='wlan0')
 
 def create_forward_packet(pyshark_object, destination):
@@ -44,7 +43,7 @@ def send_to_backend(ipc_variables):
         while(count):
             malicious_packet = filtered_packets_queue.get()
             try:   
-                print("*")
+                print('*')
                 perform_packet_operations(malicious_packet, resource_ip)
                 executor.submit(perform_packet_operations, malicious_packet, resource_ip)
             except Exception as e:

@@ -13,7 +13,7 @@ logging_packets_counter = 0
 j = 0
 
 def packet_logger(ipc_variables, capture_list):
-    print("Logging packets to packets.log")
+    print("\nLogging")
     global logging_packets_counter
     start_index = logging_packets_counter
     end_index = len(capture_list)
