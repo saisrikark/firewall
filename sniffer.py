@@ -39,12 +39,12 @@ def packet_logger(ipc_variables, capture_list):
             fp.close()
     logging_packets_counter = end_index
     if(packet_queue.qsize() > max_queue_size):
-        print("Queue size before removing elements", packet_queue.qsize())
+        #print("Queue size before removing elements", packet_queue.qsize())
         count = packet_queue.qsize()
         while(count):
             count -= 1
             packet_queue.get()
-        print("Queue size after removing elements", packet_queue.qsize())
+        #print("Queue size after removing elements", packet_queue.qsize())
 
 def packet_logger_controller(ipc_variables, capture_list):
     while(True):
