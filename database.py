@@ -78,5 +78,11 @@ class SqlDatabase:
         cursor = self._execute_sql_command(sql_command)
         return list(cursor)
 
+    def check_if_malicious_ip(ip):
+
+        sql_command = "SELECT TOP 1 src_ip FROM malicious_ip WHERE src_ip = " + ip;
+        cursor = self._execute_sql_command(sql_command)
+        return list(cursor)
+
 
 
