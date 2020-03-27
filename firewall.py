@@ -5,20 +5,19 @@ def is_already_malicious(packet):
     # Check against already malicious packets table
     return True
 
-def is_malicious(packet):
+def is_malicious(updated_packet_data):
     # Checks packet not already deemed malicious for maliciousness
     # Rules might differ from the is_already_malicious function
     return True
 
 def firewall_controller(packet):
-    if(is_already_malicious(packet)): # Checking packets with rules against already deemed malicious packets
+    if(is_already_malicious(packet)): 
         return False
     else:
-        # Update packet into table with all packets
-        # Fetch the row of the same packet
-        packet_data = () # Row that is fetched
-        if(is_malicious(packet_data)):
-            # Add packet into the malicious packets table
+        #update_table_with_packet("ambiguous_packets_table", packet)
+        updated_packet_data = ()#fetch_row_from_table("ambigious_packet_table", packet) 
+        if(is_malicious(updated_packet_data)):
+            #update_table_with_packet("malicious_packets_table", packet)
             return False
         else: 
             return True

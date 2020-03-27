@@ -84,5 +84,9 @@ class SqlDatabase:
         cursor = self._execute_sql_command(sql_command)
         return list(cursor)
 
+    def update_table_with_packet(self, table_name, packet):
+        pass
 
+    def fetch_row_from_table(self, table_name, packet):
+        return () 
 
