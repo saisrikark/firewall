@@ -1,6 +1,5 @@
 import mysql.connector
 
-
 class SqlDatabase:
 
     def __init__(self, username, password, host="localhost"):
