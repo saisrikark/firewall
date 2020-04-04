@@ -5,10 +5,11 @@ from time import sleep
 from concurrent.futures import ThreadPoolExecutor
 from firewall import firewall_controller
 from queue import Queue
-from database import SqlDatabase
+#from database import SqlDatabase
 
 pol_check_interval = 2
-db = SqlDatabase("username", "password", "localhost")
+#db = SqlDatabase("username", "password", "localhost")
+db = {}
 
 def filter_packets(ipc_variables):
     packet_check_flag = ipc_variables["packet_check_flag"]

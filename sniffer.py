@@ -10,66 +10,59 @@ import time
 max_queue_size = 500
 capture = pyshark.LiveCapture(interface = 'wlan0')
 logging_packets_counter = 0
-j = 0
-
-def packet_logger(ipc_variables, capture_list):
-    print("\nLogging")
-    global logging_packets_counter
-    start_index = logging_packets_counter
-    end_index = len(capture_list)
-    packet_queue = ipc_variables["packet_queue"]
-    for i in range(start_index,end_index):
-        try:
-            global j
-            packet_log = str(j) + " " + str(capture_list[i].sniff_timestamp) + " "
-            j = j + 1
-            packet_log = packet_log + capture_list[i]['eth'].src + " " + capture_list[i]['eth'].dst + " " 
-            packet_log = packet_log + capture_list[i][capture_list[i].transport_layer.lower()].srcport + " " 
-            packet_log = packet_log + capture_list[i][capture_list[i].transport_layer.lower()].dstport + " "
-            if("ip" in capture_list[i]):
-                packet_log = packet_log + capture_list[i]['ip'].src + " " + capture_list[i]['ip'].dst + "\n"
-            else:
-                packet_log = packet_log + capture_list[i]['ipv6'].src + " " + capture_list[i]['ipv6'].dst + "\n"
-            fp = open("packets.log", "a")
-            fp.write(packet_log)
-            fp.close()
-        except Exception as e:
-            fp = open("packets.log","a")
-            fp.write("Failed To Log The Packet " + str(e) + "\n")
-            fp.close()
-    logging_packets_counter = end_index
-    if(packet_queue.qsize() > max_queue_size):
-        #print("Queue size before removing elements", packet_queue.qsize())
-        count = packet_queue.qsize()
-        while(count):
-            count -= 1
-            packet_queue.get()
-        #print("Queue size after removing elements", packet_queue.qsize())
-
-def packet_logger_controller(ipc_variables, capture_list):
-    while(True):
-        time.sleep(5)
-        packet_logger(ipc_variables, capture_list)
+inserting_into_queue_flag = False
+clearing_list_flag = False
+clear_list_interval = 10
+clear_list_packet_threshold = 100
+packet_beginning_index = 0
+packet_ending_index = 0
+curr_machine_ip = "192.168.0.100"
 
 def read_packets(ipc_variables):
-    older_count = new_count = 0
-    packet_queue = ipc_variables["packet_queue"]
+    global packet_beginning_index
+    global packet_ending_index
     unfiltered_packets_queue = ipc_variables["unfiltered_packets_queue"]
     while(len(capture) == 0):
-        time.sleep(5)
+        time.sleep(1)
     while(True):
-        new_count = len(capture)
-        if(new_count != older_count):
-            for index in range(older_count, new_count):
-                packet_queue.put(capture[index])
-                unfiltered_packets_queue.put(capture[index])
-            older_count = new_count
+        packet_ending_index = len(capture)
+        if(packet_ending_index - packet_beginning_index):
+            while(clearing_list_flag):
+                pass
+            inserting_into_queue_flag = True
+            for index in range(packet_beginning_index, packet_ending_index):
+                try:
+                    if(capture[index]['ip'].src == curr_machine_ip):
+                        print(capture[index]['ip'].src, "passing")
+                        continue
+                    unfiltered_packets_queue.put(capture[index])
+                except Exception as e:
+                    pass
+            packet_beginning_index = packet_ending_index
+            inserting_into_queue_flag = False
+
+def clear_list():
+    global clearing_list_flag
+    global packet_beginning_index
+    global packet_ending_index
+    print("Clear list started")
+    while(True):
+        time.sleep(clear_list_interval)
+        if(len(capture) > clear_list_packet_threshold):
+            while(inserting_into_queue_flag):
+                pass
+            clearing_list_flag = True
+            capture.clear()
+            packet_beginning_index = 0
+            packet_ending_index = 0
+            clearing_list_flag = False
+            print("Clearing list", len(capture))
 
 def sniffer_controller(ipc_variables):
     global ipc_variables_glb
     ipc_variables_glb = ipc_variables
     read_packets_thread = threading.Thread(target=read_packets, args=(ipc_variables,))
-    packet_logger_thread = threading.Thread(target=packet_logger_controller, args=(ipc_variables, capture))
+    clear_list_thread = threading.Thread(target=clear_list)
     read_packets_thread.start()
-    packet_logger_thread.start()
+    clear_list_thread.start()
     capture.sniff()

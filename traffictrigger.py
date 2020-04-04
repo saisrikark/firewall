@@ -12,7 +12,7 @@ filtered_packets_queue = None
 
 def trigger_rule(after_packet_count, before_packet_count):
     # Rule - packets/sec > threshold
-    return ((after_packet_count - before_packet_count)/delta_time) > 25
+    return ((after_packet_count - before_packet_count)/delta_time) > 100
 
 def check_delta_surge(ipc_variables):
     # Check if there is an unwanted surge in packets between delta time
