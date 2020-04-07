@@ -42,3 +42,4 @@ def traffictrigger_controller(ipc_variables):
     filtered_packets_queue = ipc_variables["filtered_packets_queue"]
     while(True):
         check_delta_surge(ipc_variables)
+
