@@ -5,11 +5,8 @@ from time import sleep
 from concurrent.futures import ThreadPoolExecutor
 from firewall import firewall_controller
 from queue import Queue
-from database import SqlDatabase
 
 pol_check_interval = 2
-db = SqlDatabase("root", "", "localhost")
-#db = {}
 
 def filter_packets(ipc_variables):
     packet_check_flag = ipc_variables["packet_check_flag"]
@@ -28,7 +25,7 @@ def filter_packets(ipc_variables):
         for _ in range(0, packet_count):
             packet = unfiltered_packets_queue.get()
             temp_packets_queue.put(packet)
-            thread = executor.submit(firewall_controller, packet, db)
+            thread = executor.submit(firewall_controller, packet)
             threads.append(thread)
         for thread in threads:
             result = thread.result()

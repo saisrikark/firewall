@@ -1,4 +1,5 @@
 import mysql.connector
+import datetime
 
 class SqlDatabase:
 
@@ -32,9 +33,6 @@ class SqlDatabase:
         except mysql.connector.Error as err:
             print("Failed creating database: {}".format(err))
             exit(1)
-
-    def create_table(self, table_name, colums_dict):
-        pass
 
     @property
     def my_database(self):
@@ -73,9 +71,3 @@ class SqlDatabase:
         sql_command = "SELECT TOP 1 src_ip FROM malicious_ip WHERE src_ip = " + ip
         cursor = self._execute_sql_command(sql_command)
         return list(cursor)
-
-    def update_table_with_packet(self, table_name, packet):
-        pass
-
-    def fetch_row_from_table(self, table_name, packet):
-        return ()
