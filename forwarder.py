@@ -18,7 +18,7 @@ def create_forward_packet(pyshark_object, destination):
     py_sport = int(pyshark_object[pyshark_object.transport_layer.lower()].srcport)
     py_ip_src = pyshark_object['ip'].src
     py_ip_dst = destination
-    print(py_dport, py_sport, py_eth_src, py_eth_dst)
+    #print(py_dport, py_sport, py_eth_src, py_eth_dst)
     packet = IP(src=py_ip_src,dst=py_ip_dst)/UDP(dport=py_dport, sport=py_sport)
     return packet
 
