@@ -36,7 +36,7 @@ def check_interval(packet, sql_object):
     packets_list = sql_object.get_packets_with_ip("ambiguous_packets_table",src_ip)
     current_timestamp = int(time.time())
     time_interval = 15
-    no_of_packets = 20
+    no_of_packets = 100
     packet_count = 0
     for i in packets_list:
         if (current_timestamp - float(i[0])) < time_interval:
@@ -118,5 +118,5 @@ def firewall_controller(packet):
             print("Deemed Malicious", extracted_packet)
             return False
         else:
-            print("Not malicious")
+            print("Not malicious", extracted_packet)
             return True

@@ -16,7 +16,11 @@ clear_list_interval = 10
 clear_list_packet_threshold = 100
 packet_beginning_index = 0
 packet_ending_index = 0
-curr_machine_ip = "192.168.0.100"
+curr_machine_ip = "192.168.0.109"
+honeypot_ip = "192.168.0.110"
+resource_ip = "192.168.0.110"
+dont_sniff_src = [curr_machine_ip]
+dont_sniff_dst = [honeypot_ip, resource_ip]
 
 def read_packets(ipc_variables):
     global packet_beginning_index
@@ -32,8 +36,11 @@ def read_packets(ipc_variables):
             inserting_into_queue_flag = True
             for index in range(packet_beginning_index, packet_ending_index):
                 try:
-                    if(capture[index]['ip'].src == curr_machine_ip):
-                        print(capture[index]['ip'].src, "passing")
+                    if(capture[index]['ip'].src in dont_sniff_src):
+                        #print(capture[index]['ip'].src, "passing src")
+                        continue
+                    if(capture[index]['ip'].dst in dont_sniff_dst):
+                        #print(capture[index]['ip'].src, "passing dst")
                         continue
                     unfiltered_packets_queue.put(capture[index])
                 except Exception as e:

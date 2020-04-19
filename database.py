@@ -63,7 +63,7 @@ class SqlDatabase:
 
     def get_packets_with_ip(self, table_name, src_ip):
         sql_command = "SELECT * FROM " + table_name + " WHERE src_ip= \'" + src_ip + "\'"
-        print(sql_command)
+        #print(sql_command)
         cursor = self._execute_sql_command(sql_command)
         return list(cursor)
 
